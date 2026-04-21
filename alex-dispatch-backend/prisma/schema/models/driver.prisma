@@ -1,0 +1,11 @@
+model Driver {
+  id            Int    @id
+  name          String @db.VarChar(256)
+  phone         String @db.VarChar(80)
+  email         String @unique @db.VarChar(128)
+  passwordHash  String @map("password_hash")
+  truckCapacity Int?   @map("truck_capacity")
+  status        String @db.VarChar(40)
+
+  @@map("drivers")
+}

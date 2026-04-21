@@ -1,0 +1,4 @@
+export const APP_SETTINGS = {
+  CONTACT_PHONE: '+1 (224) 449 1659',
+  DEFAULT_PROTECTED_REDIRECT: '/loads'
+};

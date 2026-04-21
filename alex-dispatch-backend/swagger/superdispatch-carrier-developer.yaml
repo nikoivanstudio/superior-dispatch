@@ -1,0 +1,898 @@
+openapi: 3.0.3
+info:
+  title: Super Dispatch Carrier API (Developer Portal)
+  version: 2026-03-29
+  description: |
+    Swagger/OpenAPI spec compiled from:
+    https://developer.superdispatch.com/carrier/reference/
+servers:
+  - url: https://carrier.superdispatch.com
+    description: Production
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Drivers
+  - name: Orders
+  - name: Attachments
+  - name: Vehicles
+  - name: Expenses
+  - name: Invoices
+  - name: Offers
+  - name: Inspection Photos
+  - name: Damages
+  - name: Inspections
+  - name: Signatures
+
+paths:
+  /v1/oauth/token/:
+    post:
+      tags: [Auth]
+      summary: Get access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [grant_type, client_id, client_secret]
+              properties:
+                grant_type:
+                  type: string
+                  enum: [client_credentials]
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+      responses:
+        '200':
+          description: Token response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+
+  /v1/carriers/{carrierId}/drivers/:
+    post:
+      tags: [Drivers]
+      summary: Invite driver
+      parameters:
+        - $ref: '#/components/parameters/CarrierId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/drivers/:
+    get:
+      tags: [Drivers]
+      summary: List drivers
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/drivers/{id}/:
+    get:
+      tags: [Drivers]
+      summary: Get a driver
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags: [Drivers]
+      summary: Update a driver
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      tags: [Drivers]
+      summary: Update a driver (partial)
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/drivers/{id}/location/:
+    get:
+      tags: [Drivers]
+      summary: Get driver location
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/:
+    get:
+      tags: [Orders]
+      summary: List orders
+      parameters:
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            maximum: 100
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [unassigned, assigned, picked_up, in_transit, delivered, archived, billed, paid]
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags: [Orders]
+      summary: Create an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/:
+    get:
+      tags: [Orders]
+      summary: Get an order
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags: [Orders]
+      summary: Update an order
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      tags: [Orders]
+      summary: Update an order (partial)
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags: [Orders]
+      summary: Delete an order
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          $ref: '#/components/responses/DeletedResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/picked-up/:
+    post:
+      tags: [Orders]
+      summary: Mark order as picked up
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/delivered/:
+    post:
+      tags: [Orders]
+      summary: Mark order as delivered
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/assign-driver/:
+    post:
+      tags: [Orders]
+      summary: Assign driver
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/unassign-driver/:
+    post:
+      tags: [Orders]
+      summary: Unassign driver
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/cancel/:
+    post:
+      tags: [Orders]
+      summary: Cancel order
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/split/:
+    post:
+      tags: [Orders]
+      summary: Split order
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/bol/:
+    get:
+      tags: [Orders]
+      summary: Get order BOL
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/attachments/:
+    post:
+      tags: [Attachments]
+      summary: Add attachment
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [Attachments]
+      summary: List attachments
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/attachments/{id}/:
+    get:
+      tags: [Attachments]
+      summary: Get attachment
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/vehicles/:
+    post:
+      tags: [Vehicles]
+      summary: Create vehicle
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [Vehicles]
+      summary: List vehicles
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/vehicles/{id}/:
+    get:
+      tags: [Vehicles]
+      summary: Get vehicle
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags: [Vehicles]
+      summary: Update vehicle
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags: [Vehicles]
+      summary: Delete vehicle
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          $ref: '#/components/responses/DeletedResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/vehicles/{id}/bol/:
+    get:
+      tags: [Vehicles]
+      summary: Get vehicle BOL
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/expenses/:
+    get:
+      tags: [Expenses]
+      summary: List expenses
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags: [Expenses]
+      summary: Add expense
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/expenses/{id}/:
+    get:
+      tags: [Expenses]
+      summary: Get expense
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags: [Expenses]
+      summary: Delete expense
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          $ref: '#/components/responses/DeletedResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/invoice/:
+    post:
+      tags: [Invoices]
+      summary: Send invoice
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{id}/offers/:
+    get:
+      tags: [Offers]
+      summary: List offers
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/offers/{id}/:
+    get:
+      tags: [Offers]
+      summary: Get offer
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/offers/{id}/accept/:
+    post:
+      tags: [Offers]
+      summary: Accept offer
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/offers/{id}/decline/:
+    post:
+      tags: [Offers]
+      summary: Decline offer
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/vehicles/{id}/photos/:
+    post:
+      tags: [Inspection Photos]
+      summary: Send vehicle photo
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [Inspection Photos]
+      summary: Receive vehicle photos
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/photos/{id}/:
+    get:
+      tags: [Inspection Photos]
+      summary: Receive vehicle photo by id
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags: [Inspection Photos]
+      summary: Delete vehicle photo
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          $ref: '#/components/responses/DeletedResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/vehicles/{id}/damages/:
+    post:
+      tags: [Damages]
+      summary: Send vehicle damages
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [Damages]
+      summary: Receive vehicle damages
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/damages/{id}/:
+    get:
+      tags: [Damages]
+      summary: Receive vehicle damage by id
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags: [Damages]
+      summary: Delete vehicle damage
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          $ref: '#/components/responses/DeletedResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/vehicles/{id}/inspections/:
+    post:
+      tags: [Inspections]
+      summary: Send vehicle inspection
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/vehicles/{vehicle_id}/inspections/{step}/:
+    get:
+      tags: [Inspections]
+      summary: Receive vehicle inspection by step
+      parameters:
+        - $ref: '#/components/parameters/VehicleIdPath'
+        - $ref: '#/components/parameters/StepPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags: [Inspections]
+      summary: Update vehicle inspection by step
+      parameters:
+        - $ref: '#/components/parameters/VehicleIdPath'
+        - $ref: '#/components/parameters/StepPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '200':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{order_id}/signatures/{step}/:
+    get:
+      tags: [Signatures]
+      summary: Receive signatures by step
+      parameters:
+        - $ref: '#/components/parameters/OrderIdPath'
+        - $ref: '#/components/parameters/StepPath'
+      responses:
+        '200':
+          $ref: '#/components/responses/CollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    post:
+      tags: [Signatures]
+      summary: Send signature
+      parameters:
+        - $ref: '#/components/parameters/OrderIdPath'
+        - $ref: '#/components/parameters/StepPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectPayload'
+      responses:
+        '201':
+          $ref: '#/components/responses/SingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    CarrierId:
+      name: carrierId
+      in: path
+      required: true
+      schema:
+        type: integer
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    VehicleIdPath:
+      name: vehicle_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    OrderIdPath:
+      name: order_id
+      in: path
+      required: true
+      schema:
+        type: integer
+    StepPath:
+      name: step
+      in: path
+      required: true
+      schema:
+        type: string
+        enum: [pickup, delivery]
+
+  responses:
+    SingleResponse:
+      description: Standard single-item response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SingleResponse'
+    CollectionResponse:
+      description: Standard collection response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CollectionResponse'
+    DeletedResponse:
+      description: Standard deleted response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DeletedResponse'
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    Meta:
+      type: object
+      required: [code, request_id]
+      properties:
+        code:
+          type: integer
+        request_id:
+          type: string
+
+    ObjectPayload:
+      type: object
+      additionalProperties: true
+
+    AuthTokenResponse:
+      type: object
+      required: [access_token, token_type, expires_in]
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+        expires_in:
+          type: integer
+        scope:
+          type: string
+
+    SingleResponse:
+      type: object
+      required: [meta]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          oneOf:
+            - $ref: '#/components/schemas/ObjectPayload'
+            - type: string
+
+    CollectionResponse:
+      type: object
+      required: [meta, data]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectPayload'
+        pagination:
+          type: object
+          properties:
+            previous:
+              type: string
+              nullable: true
+            next:
+              type: string
+              nullable: true
+
+    DeletedResponse:
+      type: object
+      required: [meta]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    ErrorResponse:
+      type: object
+      required: [meta]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              source:
+                type: string
+              detail:
+                type: string

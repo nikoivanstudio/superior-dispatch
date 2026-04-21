@@ -1,0 +1,1091 @@
+openapi: 3.0.3
+info:
+  title: Super Dispatch Carrier TMS API (Public)
+  version: 1.0.0
+  description: |
+    OpenAPI specification assembled from the public Super Dispatch Carrier TMS API documentation.
+    Source: https://superdispatch.notion.site/Public-Carrier-TMS-API-Public-Version-b5fd0270888c4a4fb856be87a86192e1
+servers:
+  - url: https://carrier.superdispatch.com
+    description: Production
+  - url: https://staging.carrier.superdispatch.org
+    description: Staging
+security:
+  - bearerAuth: []
+tags:
+  - name: Authentication
+  - name: Drivers
+  - name: Orders
+
+paths:
+  /oauth/token/:
+    post:
+      tags: [Authentication]
+      summary: Get OAuth access token
+      operationId: oauthToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [grant_type, client_id, client_secret]
+              properties:
+                grant_type:
+                  type: string
+                  enum: [client_credentials]
+                client_id:
+                  type: string
+                client_secret:
+                  type: string
+      responses:
+        '200':
+          description: Access token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthTokenResponse'
+
+  /v1/carriers/{carrierId}/drivers/:
+    parameters:
+      - $ref: '#/components/parameters/CarrierId'
+    post:
+      tags: [Drivers]
+      summary: Invite driver
+      operationId: inviteDriver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverCreateRequest'
+      responses:
+        '201':
+          description: Driver invited
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [Drivers]
+      summary: List drivers
+      operationId: listDrivers
+      responses:
+        '200':
+          description: Drivers list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverCollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/drivers/{driverId}/:
+    parameters:
+      - $ref: '#/components/parameters/DriverId'
+    get:
+      tags: [Drivers]
+      summary: Get a driver
+      operationId: getDriver
+      responses:
+        '200':
+          description: Driver details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags: [Drivers]
+      summary: Update a driver (replace)
+      operationId: updateDriverPut
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdateRequest'
+      responses:
+        '200':
+          description: Driver updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      tags: [Drivers]
+      summary: Update a driver (partial)
+      operationId: updateDriverPatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DriverUpdateRequest'
+      responses:
+        '200':
+          description: Driver updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/:
+    post:
+      tags: [Orders]
+      summary: Create an order
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    get:
+      tags: [Orders]
+      summary: List orders
+      operationId: listOrders
+      parameters:
+        - $ref: '#/components/parameters/OrderStatus'
+        - $ref: '#/components/parameters/DeliveryCompletedAtGt'
+        - $ref: '#/components/parameters/DeliveryCompletedAtGte'
+        - $ref: '#/components/parameters/DeliveryCompletedAtLt'
+        - $ref: '#/components/parameters/DeliveryCompletedAtLte'
+      responses:
+        '200':
+          description: Orders list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{orderId}/:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      tags: [Orders]
+      summary: Get an order
+      operationId: getOrder
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    put:
+      tags: [Orders]
+      summary: Update an order (replace)
+      operationId: updateOrderPut
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreateRequest'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    patch:
+      tags: [Orders]
+      summary: Update an order (partial)
+      operationId: updateOrderPatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+      responses:
+        '200':
+          description: Order updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+    delete:
+      tags: [Orders]
+      summary: Delete an order
+      operationId: deleteOrder
+      responses:
+        '204':
+          description: Order deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{orderId}/driver_location/:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      tags: [Orders]
+      summary: Get order driver location
+      operationId: getOrderDriverLocation
+      responses:
+        '200':
+          description: Current driver location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriverLocationSingleResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{orderId}/mark-as-picked-up/:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      summary: Mark order as picked up
+      operationId: markOrderAsPickedUp
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCompletedAtRequest'
+      responses:
+        '200':
+          description: Marked as picked up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{orderId}/mark-as-delivered/:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      summary: Mark order as delivered
+      operationId: markOrderAsDelivered
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCompletedAtRequest'
+      responses:
+        '200':
+          description: Marked as delivered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{orderId}/assign-driver/:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      summary: Assign driver to order
+      operationId: assignDriverToOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignDriverRequest'
+      responses:
+        '200':
+          description: Driver assigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{orderId}/unassign-driver/:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      summary: Unassign driver from order
+      operationId: unassignDriverFromOrder
+      responses:
+        '200':
+          description: Driver unassigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{orderId}/cancel/:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    post:
+      tags: [Orders]
+      summary: Cancel order
+      operationId: cancelOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CancelOrderRequest'
+      responses:
+        '200':
+          description: Order canceled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+  /v1/orders/{parentOrderId}/split/:
+    parameters:
+      - $ref: '#/components/parameters/ParentOrderId'
+    post:
+      tags: [Orders]
+      summary: Split order into multiple child orders
+      operationId: splitOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SplitOrderRequest'
+      responses:
+        '201':
+          description: Split created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderCollectionResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    CarrierId:
+      name: carrierId
+      in: path
+      required: true
+      schema:
+        type: integer
+    DriverId:
+      name: driverId
+      in: path
+      required: true
+      schema:
+        type: integer
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: integer
+    ParentOrderId:
+      name: parentOrderId
+      in: path
+      required: true
+      schema:
+        type: integer
+    OrderStatus:
+      name: status
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [new, picked_up, delivered]
+    DeliveryCompletedAtGt:
+      name: delivery_completed_at[gt]
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    DeliveryCompletedAtGte:
+      name: delivery_completed_at[gte]
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    DeliveryCompletedAtLt:
+      name: delivery_completed_at[lt]
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    DeliveryCompletedAtLte:
+      name: delivery_completed_at[lte]
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+
+  responses:
+    ErrorResponse:
+      description: Error response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+    Meta:
+      type: object
+      required: [code, request_id]
+      properties:
+        code:
+          type: integer
+        request_id:
+          type: string
+
+    Pagination:
+      type: object
+      properties:
+        previous:
+          type: string
+          nullable: true
+        next:
+          type: string
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      required: [meta, error]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        error:
+          type: object
+          required: [message]
+          properties:
+            message:
+              type: string
+            context:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+
+    DeletedResponse:
+      type: object
+      required: [meta]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    MessageResponse:
+      type: object
+      required: [meta, data]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: string
+
+    AuthTokenResponse:
+      type: object
+      required: [access_token, token_type, expires_in, scope]
+      properties:
+        access_token:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+        scope:
+          type: string
+
+    DriverStatus:
+      type: string
+      enum: [pending, activated, deactivated]
+
+    Driver:
+      type: object
+      required: [id, name, email, phone, truck_capacity, status]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        truck_capacity:
+          type: integer
+        status:
+          $ref: '#/components/schemas/DriverStatus'
+
+    DriverCreateRequest:
+      type: object
+      required: [name, email, phone, truck_capacity]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        truck_capacity:
+          type: integer
+
+    DriverUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/DriverCreateRequest'
+
+    DriverSingleResponse:
+      type: object
+      required: [meta, data]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Driver'
+
+    DriverCollectionResponse:
+      type: object
+      required: [meta, data, pagination]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Driver'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    DriverLocation:
+      type: object
+      required: [driver_id, latitude, longitude, updated_at]
+      properties:
+        driver_id:
+          type: integer
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        updated_at:
+          type: string
+          format: date-time
+
+    DriverLocationSingleResponse:
+      type: object
+      required: [meta, data]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/DriverLocation'
+
+    OrderStatus:
+      type: string
+      enum: [new, picked_up, delivered]
+
+    InspectionType:
+      type: string
+      enum: [aiag, standard, advanced]
+
+    PaymentMethod:
+      type: string
+      enum:
+        - cash
+        - check
+        - cashiers_check
+        - money_order
+        - comchek
+        - ach
+        - factoring
+        - direct_deposit
+        - credit_card
+        - venmo
+        - cashapp
+        - uship
+        - zelle
+        - superpay
+        - other
+
+    PaymentTerms:
+      type: string
+      enum:
+        - on_delivery
+        - on_pickup
+        - cash_on_delivery
+        - cash_on_pickup
+        - check_on_delivery
+        - check_on_pickup
+        - quickpay
+        - ach
+        - 2_days
+        - 5_days
+        - 7_days
+        - 10_days
+        - 15_days
+        - 20_days
+        - 30_days
+        - 45_days
+        - 60_days
+        - other
+
+    VehicleType:
+      type: string
+      enum:
+        - sedan
+        - suv
+        - pickup
+        - van
+        - truck_daycab
+        - truck_sleeper
+        - motorcycle
+        - 2_door_coupe
+        - 4_door_pickup
+        - boat
+        - rv
+        - heavy_machinery
+        - freight
+        - livestock
+        - atv
+        - trailer_bumper_pull
+        - trailer_gooseneck
+        - trailer_5th_wheel
+        - other
+
+    Contact:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        phone2:
+          type: string
+        email:
+          type: string
+          format: email
+        fax:
+          type: string
+
+    Venue:
+      type: object
+      required: [name, city, state, zip]
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        contact:
+          $ref: '#/components/schemas/Contact'
+
+    Stop:
+      type: object
+      properties:
+        scheduled_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        venue:
+          $ref: '#/components/schemas/Venue'
+
+    InvoiceRef:
+      type: object
+      properties:
+        id:
+          type: string
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Payment:
+      type: object
+      properties:
+        terms:
+          type: string
+          description: Deprecated legacy field.
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+        payment_terms:
+          $ref: '#/components/schemas/PaymentTerms'
+        notes:
+          type: string
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        invoice:
+          $ref: '#/components/schemas/InvoiceRef'
+
+    Party:
+      type: object
+      required: [name, address, city, state, zip]
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zip:
+          type: string
+        contact:
+          $ref: '#/components/schemas/Contact'
+
+    VehiclePhoto:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+
+    Vehicle:
+      type: object
+      properties:
+        id:
+          type: integer
+        make:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+        color:
+          type: string
+        vin:
+          type: string
+        type:
+          $ref: '#/components/schemas/VehicleType'
+        lot_number:
+          type: string
+        is_inoperable:
+          type: boolean
+        requires_enclosed_trailer:
+          type: boolean
+        photos:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehiclePhoto'
+
+    Trip:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    InternalNote:
+      type: object
+      properties:
+        text:
+          type: string
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        carrier_id:
+          type: integer
+        carrier_name:
+          type: string
+        driver_id:
+          type: integer
+          nullable: true
+        number:
+          type: string
+        price:
+          type: string
+        buyer_number:
+          type: string
+        broker_fee:
+          type: string
+        instructions:
+          type: string
+        status:
+          $ref: '#/components/schemas/OrderStatus'
+        inspection_type:
+          $ref: '#/components/schemas/InspectionType'
+        is_canceled:
+          type: boolean
+        pdf_bol_url:
+          type: string
+          format: uri
+        internal_notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/InternalNote'
+        internal_load_id:
+          type: string
+        parent_order_id:
+          type: integer
+        driver_pay:
+          type: string
+        payment:
+          $ref: '#/components/schemas/Payment'
+        customer:
+          $ref: '#/components/schemas/Party'
+        trip:
+          $ref: '#/components/schemas/Trip'
+        pickup:
+          $ref: '#/components/schemas/Stop'
+        delivery:
+          $ref: '#/components/schemas/Stop'
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vehicle'
+
+    OrderCreatePayment:
+      type: object
+      required: [terms]
+      properties:
+        terms:
+          type: string
+          description: Deprecated legacy field (required by current docs).
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+        payment_terms:
+          $ref: '#/components/schemas/PaymentTerms'
+        notes:
+          type: string
+          maxLength: 1000
+
+    VehicleCreateRequest:
+      type: object
+      properties:
+        make:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+        color:
+          type: string
+        vin:
+          type: string
+        type:
+          $ref: '#/components/schemas/VehicleType'
+        lot_number:
+          type: string
+        is_inoperable:
+          type: boolean
+        requires_enclosed_trailer:
+          type: boolean
+
+    OrderCreateRequest:
+      type: object
+      required: [price, broker_fee, payment, customer, pickup, delivery]
+      properties:
+        driver_id:
+          type: integer
+        number:
+          type: string
+        price:
+          type: number
+          format: double
+        buyer_number:
+          type: string
+        broker_fee:
+          type: number
+          format: double
+        instructions:
+          type: string
+        inspection_type:
+          $ref: '#/components/schemas/InspectionType'
+        internal_note:
+          type: string
+        internal_load_id:
+          type: string
+        driver_pay:
+          type: number
+          format: double
+        payment:
+          $ref: '#/components/schemas/OrderCreatePayment'
+        customer:
+          $ref: '#/components/schemas/Party'
+        pickup:
+          $ref: '#/components/schemas/Stop'
+        delivery:
+          $ref: '#/components/schemas/Stop'
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/VehicleCreateRequest'
+
+    OrderUpdateRequest:
+      type: object
+      properties:
+        driver_id:
+          type: integer
+        number:
+          type: string
+        price:
+          type: number
+          format: double
+        buyer_number:
+          type: string
+        broker_fee:
+          type: number
+          format: double
+        instructions:
+          type: string
+        inspection_type:
+          $ref: '#/components/schemas/InspectionType'
+        internal_note:
+          type: string
+        internal_load_id:
+          type: string
+        driver_pay:
+          type: number
+          format: double
+        payment:
+          $ref: '#/components/schemas/OrderCreatePayment'
+        customer:
+          $ref: '#/components/schemas/Party'
+        pickup:
+          $ref: '#/components/schemas/Stop'
+        delivery:
+          $ref: '#/components/schemas/Stop'
+
+    OrderSingleResponse:
+      type: object
+      required: [meta, data]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          $ref: '#/components/schemas/Order'
+
+    OrderCollectionResponse:
+      type: object
+      required: [meta, data]
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    OrderCompletedAtRequest:
+      type: object
+      properties:
+        completed_at:
+          type: string
+          format: date-time
+
+    AssignDriverRequest:
+      type: object
+      required: [driver_id]
+      properties:
+        driver_id:
+          type: integer
+
+    CancelReasonType:
+      type: string
+      enum:
+        - unit_not_ready
+        - unknown_inoperable_vehicle
+        - cannot_meet_dates
+        - low_price
+        - changed_route
+
+    CancelOrderRequest:
+      type: object
+      properties:
+        cancel_reason_type:
+          $ref: '#/components/schemas/CancelReasonType'
+        cancel_reason:
+          type: string
+      anyOf:
+        - required: [cancel_reason_type]
+        - required: [cancel_reason]
+
+    SplitOrderNewOrder:
+      type: object
+      required: [order_number, vehicle_ids]
+      properties:
+        order_number:
+          type: string
+        vehicle_ids:
+          type: array
+          minItems: 1
+          items:
+            type: integer
+
+    SplitOrderRequest:
+      type: object
+      required: [new_orders]
+      properties:
+        base_order_number:
+          type: string
+        new_orders:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SplitOrderNewOrder'

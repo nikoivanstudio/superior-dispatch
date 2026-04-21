@@ -1,0 +1,15 @@
+import 'dotenv/config';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import cookieParser from 'cookie-parser';
+
+const origin = process.env.CORS_ORIGIN || 'http://crm.localtest.me:5173';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
+  app.enableCors({ origin, credentials: true });
+  await app.listen(process.env.PORT ?? 3001);
+}
+
+void bootstrap();
