@@ -45,7 +45,10 @@ const getQueryParamsString = (
     );
 };
 
-const getUrl = (slug: string, queryParams?: Record<string, string | number>) => {
+const getUrl = (
+  slug: string,
+  queryParams?: Record<string, string | number>
+) => {
   const baseUrl = isAbsoluteUrl(slug)
     ? trimTrailingSlash(slug)
     : `${getApiUrl()}/${trimLeadingSlash(slug)}`;
@@ -83,6 +86,11 @@ const getPostLoginRedirect = (request: Request) => {
   );
 };
 
+const getRequestPath = (request: Request) => {
+  const url = new URL(request.url);
+  return `${url.pathname}${url.search}`;
+};
+
 export const urlUtils = {
   getOrigin,
   getApiRoute,
@@ -90,5 +98,6 @@ export const urlUtils = {
   getUrl,
   sanitizeRedirectTarget,
   getBackendBaseUrl,
-  getPostLoginRedirect
+  getPostLoginRedirect,
+  getRequestPath
 };

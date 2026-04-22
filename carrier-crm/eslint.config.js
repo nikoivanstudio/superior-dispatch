@@ -90,6 +90,7 @@ export default defineConfig([
           patterns: [
             {
               group: ['@/views/*/**', '@/widgets/*/**', '@/features/*/**', '@/entities/*/**'],
+              allowTypeImports: true,
               message: 'Import other slices only through their public API.'
             }
           ]

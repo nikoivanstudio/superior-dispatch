@@ -1,6 +1,6 @@
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
-import { clsx, type ClassValue } from 'clsx';
+import { type ClassValue, clsx } from 'clsx';
 import {
   ChevronDownIcon,
   CircleHelpIcon,
@@ -14,6 +14,7 @@ import { Form, Link } from 'react-router';
 import { twMerge } from 'tailwind-merge';
 
 import { useAuth } from '@/features/auth';
+
 import { Button } from '@/shared/ui/button';
 
 function cn(...inputs: ClassValue[]) {
@@ -79,7 +80,8 @@ const DropdownMenuItem = React.forwardRef<
     className={cn(
       'relative flex cursor-default select-none items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium outline-none transition-colors',
       'focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
-      tone === 'danger' && 'text-destructive focus:bg-destructive/10 focus:text-destructive',
+      tone === 'danger' &&
+        'text-destructive focus:bg-destructive/10 focus:text-destructive',
       className
     )}
     {...props}
@@ -93,7 +95,10 @@ const Avatar = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
-    className={cn('relative flex size-10 shrink-0 overflow-hidden rounded-full', className)}
+    className={cn(
+      'relative flex size-10 shrink-0 overflow-hidden rounded-full',
+      className
+    )}
     {...props}
   />
 ));
@@ -120,7 +125,11 @@ const getUserName = (firstName?: string, lastName?: string) => {
   return fullName || 'My Account';
 };
 
-const getUserInitials = (firstName?: string, lastName?: string, email?: string) => {
+const getUserInitials = (
+  firstName?: string,
+  lastName?: string,
+  email?: string
+) => {
   const nameParts = [firstName, lastName].filter(Boolean);
 
   if (nameParts.length > 0) {
@@ -150,7 +159,11 @@ export const UserMenu: FC = () => {
   }
 
   const userName = getUserName(user.firstName, user.lastName);
-  const userInitials = getUserInitials(user.firstName, user.lastName, user.email);
+  const userInitials = getUserInitials(
+    user.firstName,
+    user.lastName,
+    user.email
+  );
 
   return (
     <DropdownMenu>
@@ -198,7 +211,10 @@ export const UserMenu: FC = () => {
 
           <Form method="post" action="/logout">
             <DropdownMenuItem asChild tone="danger">
-              <button type="submit" className="flex w-full items-center gap-3 text-left">
+              <button
+                type="submit"
+                className="flex w-full items-center gap-3 text-left"
+              >
                 <LogOutIcon className="size-4" />
                 <span>Logout</span>
               </button>
