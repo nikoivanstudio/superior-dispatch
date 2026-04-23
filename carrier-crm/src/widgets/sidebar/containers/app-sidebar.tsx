@@ -1,5 +1,5 @@
 import { ChevronLeftIcon } from 'lucide-react';
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
 import { Link, useLocation } from 'react-router';
 
 import {
@@ -7,38 +7,7 @@ import {
   type SidebarLayoutGroup,
   type SidebarLayoutItem
 } from '../ui/sidebar-layout';
-
-type SidebarContainerLinkItem = {
-  id: string;
-  type?: 'link';
-  label: string;
-  to: string;
-  end?: boolean;
-};
-
-type SidebarContainerLogoutItem = {
-  id: string;
-  type: 'logout';
-  label: string;
-  action?: string;
-  method?: 'get' | 'post';
-};
-
-export type SidebarContainerItem =
-  | SidebarContainerLinkItem
-  | SidebarContainerLogoutItem;
-
-export type SidebarContainerGroup = {
-  id: string;
-  items: SidebarContainerItem[];
-};
-
-type Props = {
-  title: string;
-  backTo?: string;
-  groups: SidebarContainerGroup[];
-  header?: ReactNode;
-};
+import type { AppSidebarProps } from '../domain';
 
 const isPathActive = (pathname: string, to: string, end?: boolean) => {
   if (end) {
@@ -52,7 +21,7 @@ const isPathActive = (pathname: string, to: string, end?: boolean) => {
   return pathname === to || pathname.startsWith(`${to}/`);
 };
 
-export const AppSidebar: FC<Props> = ({
+export const AppSidebar: FC<AppSidebarProps> = ({
   title,
   backTo = '/',
   groups,
