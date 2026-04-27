@@ -1,0 +1,9 @@
+model Teminal {
+  id        Int       @default(autoincrement())
+  userId    Int       @unique @map("user_id")
+  user      User      @relation(fields: [userId], references: [id])
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt DateTime? @updatedAt() @map("updated_at") @db.Timestamp()
+
+  @@map("terminal")
+}

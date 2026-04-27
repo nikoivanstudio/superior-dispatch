@@ -12,18 +12,18 @@ export default function ViewsLayoutRoute() {
             {
               id: 'settings',
               label: 'Settings',
-              to: '/settings',
+              to: 'settings',
               end: true
             },
             {
               id: 'carrier-profile',
               label: 'Carrier Profile',
-              to: '/settings/carrier-profile'
+              to: 'carrier-profile'
             },
             {
               id: 'subscription',
               label: 'Subscription',
-              to: '/settings/subscription'
+              to: 'subscription'
             }
           ]
         },

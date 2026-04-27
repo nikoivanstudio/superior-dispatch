@@ -2,11 +2,12 @@ import js from '@eslint/js';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import globals from 'globals';
 import importPlugin from 'eslint-plugin-import';
+import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import tseslint from 'typescript-eslint';
 
-const sourceFiles = ['**/*.{js,jsx,ts,tsx}'];
+const sourceFiles = ['app/**/*.{js,jsx,ts,tsx}', 'src/**/*.{js,jsx,ts,tsx}'];
 const fsdFiles = ['src/**/*.{js,jsx,ts,tsx}'];
 const layers = ['views', 'widgets', 'features', 'entities', 'shared'];
 
@@ -47,6 +48,8 @@ export default defineConfig([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
+      reactPlugin.configs.flat.recommended,
+      reactPlugin.configs.flat['jsx-runtime'],
       reactHooks.configs.flat.recommended,
       reactRefresh.configs.vite
     ],
@@ -55,9 +58,20 @@ export default defineConfig([
     },
     languageOptions: {
       ecmaVersion: 2020,
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        }
+      },
       globals: globals.browser
     },
+    settings: {
+      react: {
+        version: 'detect'
+      }
+    },
     rules: {
+      'react/jsx-key': 'error',
       'no-restricted-syntax': [
         'error',
         {

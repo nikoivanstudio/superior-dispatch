@@ -1,0 +1,11 @@
+model Factoring {
+  id             Int      @default(autoincrement())
+  userId         Int      @unique @map("user_id")
+  user           User     @relation(fields: [userId], references: [id])
+  attachInvoices Boolean? @map("attach_invoices")
+  deliveryDates  Boolean? @map("delivery_dates")
+  invoceEmail    String?  @map("invoice_email")
+  companyName    String?  @map("company_name")
+
+  @@map("factoring")
+}

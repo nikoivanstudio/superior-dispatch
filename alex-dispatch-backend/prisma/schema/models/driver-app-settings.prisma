@@ -1,0 +1,10 @@
+model DriverAppSettings {
+  id              Int      @default(autoincrement())
+  userId          Int      @unique @map("user_id")
+  user            User     @relation(fields: [userId], references: [id])
+  hidePayment     Boolean? @map("hide_payment")
+  disableCustomer Boolean? @map("disable_customer")
+  driverPay       Boolean? @map("driver_pay")
+
+  @@map("driver_app_settings")
+}
