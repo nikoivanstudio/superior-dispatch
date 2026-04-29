@@ -130,7 +130,9 @@ const getUserInitials = (
   lastName?: string,
   email?: string
 ) => {
-  const nameParts = [firstName, lastName].filter(Boolean);
+  const nameParts = [firstName, lastName].filter(
+    (part): part is string => Boolean(part)
+  );
 
   if (nameParts.length > 0) {
     return nameParts

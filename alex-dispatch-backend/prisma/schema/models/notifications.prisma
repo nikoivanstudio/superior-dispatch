@@ -1,5 +1,5 @@
 model Notifications {
-  id                         Int     @default(autoincrement())
+  id                         Int     @id @default(autoincrement())
   userId                     Int     @unique @map("user_id")
   user                       User    @relation(fields: [userId], references: [id])
   notificationsEmail         String? @map("notifications_email")

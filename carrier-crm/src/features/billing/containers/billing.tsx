@@ -1,10 +1,15 @@
 import type { FC } from 'react';
 
+import { useBillingSettings } from '../hooks/use-billing-settings';
 import { BillingForm } from '../ui/billing-form';
 import { BillingLayout } from '../ui/billing-layout';
 
 export const Billing: FC = () => {
-  const handleSubmit = () => true;
+  const { submit, values } = useBillingSettings();
 
-  return <BillingLayout form={<BillingForm onSubmit={handleSubmit} />} />;
+  return (
+    <BillingLayout
+      form={<BillingForm defaultValues={values} onSubmit={submit} />}
+    />
+  );
 };

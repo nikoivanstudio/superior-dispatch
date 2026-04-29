@@ -2,9 +2,19 @@ import type { Route } from '../../../../.react-router/types/app/routes/+types/pr
 
 import { authContext, requireUser } from '@/features/auth';
 
+import { apiUtils } from '@/shared/lib/api-utils';
+
 export const protectedLayoutmiddleware: Route.MiddlewareFunction[] = [
   async ({ request, context }, next) => {
-    const user = await requireUser(request);
+    let user = null;
+
+    try {
+      user = await requireUser(request);
+    } catch (error) {
+      if (!apiUtils.isBackendUnavailableError(error)) {
+        throw error;
+      }
+    }
 
     context.set(authContext, user);
 

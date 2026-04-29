@@ -11,9 +11,11 @@ model User {
   carsPerMonth      String             @map("cars_per_month") @db.VarChar(120)
   usdot             String             @db.VarChar(80)
   hear              String             @db.VarChar(120)
-  driverAppSettings DriverAppSettings? @map("driver_app_settings")
-
-  terminals Teminal[]
+  terminals         Teminal[]
+  driverAppSettings DriverAppSettings?
+  billingSettings   BillingSettings?
+  notifications     Notifications?
+  factoring         Factoring?
 
   @@map("users")
 }

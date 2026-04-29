@@ -13,12 +13,25 @@ export async function signIn({
   username: string;
   password: string;
 }) {
-  const response = await apiClient.post<Response>({
-    url: `${urlUtils.getBackendBaseUrl()}/signin`,
-    headers: headers.json,
-    body: JSON.stringify({ username, password }),
-    withoutParse: true
-  });
+  let response: Response;
+
+  try {
+    response = await apiClient.post<Response>({
+      url: `${urlUtils.getBackendBaseUrl()}/signin`,
+      headers: headers.json,
+      body: JSON.stringify({ username, password }),
+      withoutParse: true
+    });
+  } catch (error) {
+    if (apiUtils.isBackendUnavailableError(error)) {
+      return {
+        ok: false as const,
+        error: 'Sign in is temporarily unavailable while backend is offline'
+      };
+    }
+
+    throw error;
+  }
 
   if (!response.ok) {
     const payload = await apiUtils.readErrorPayload(response);

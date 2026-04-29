@@ -1,16 +1,17 @@
 import type { FC, FormEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 
-type NotificationsFormValues = {
-  notificationEmails: string;
-  deliveryConfirmationEmails: string;
-};
+import {
+  defaultNotificationsFormValues,
+  type NotificationsFormValues
+} from '../domain';
 
 type Props = {
+  defaultValues?: Partial<NotificationsFormValues>;
   onSubmit(args?: NotificationsFormValues): unknown | Promise<unknown>;
 };
 
@@ -22,13 +23,21 @@ const labelClassName = cn(
   'mb-2 block text-[17px] leading-[1.2] font-normal tracking-[-0.01em] text-[#1d2234]'
 );
 
-const defaultValues: NotificationsFormValues = {
-  notificationEmails: '',
-  deliveryConfirmationEmails: ''
-};
+export const NotificationsForm: FC<Props> = ({
+  defaultValues,
+  onSubmit
+}) => {
+  const [values, setValues] = useState<NotificationsFormValues>({
+    ...defaultNotificationsFormValues,
+    ...defaultValues
+  });
 
-export const NotificationsForm: FC<Props> = ({ onSubmit }) => {
-  const [values, setValues] = useState<NotificationsFormValues>(defaultValues);
+  useEffect(() => {
+    setValues({
+      ...defaultNotificationsFormValues,
+      ...defaultValues
+    });
+  }, [defaultValues]);
 
   const handleChange =
     (field: keyof NotificationsFormValues) =>
@@ -41,7 +50,7 @@ export const NotificationsForm: FC<Props> = ({ onSubmit }) => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(values);
+    void onSubmit(values);
   };
 
   return (

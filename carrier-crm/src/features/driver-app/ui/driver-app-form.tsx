@@ -1,38 +1,47 @@
 import type { FC, FormEvent } from 'react';
-import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
+import { Checkbox } from '@/shared/ui/checkbox';
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel
+} from '@/shared/ui/field';
 
-type DriverAppFormValues = {
-  hidePaymentInformation: boolean;
-  disableCustomerNotAvailable: boolean;
-  enableDriverPayField: boolean;
-};
+import {
+  defaultDriverAppFormValues,
+  type DriverAppFormValues
+} from '../domain';
 
 type Props = {
+  defaultValues?: Partial<DriverAppFormValues>;
   onSubmit(args?: DriverAppFormValues): unknown | Promise<unknown>;
 };
 
 const checkboxClassName = cn(
-  'peer sr-only'
+  'mt-0.5 size-[26px] rounded-[4px] border-[#c5cbe5] bg-[#f3f5ff] data-[state=checked]:border-[#176be8] data-[state=checked]:bg-[#176be8] focus-visible:ring-2 focus-visible:ring-[#d9e6ff] focus-visible:ring-offset-2'
 );
 
-const defaultValues: DriverAppFormValues = {
-  hidePaymentInformation: false,
-  disableCustomerNotAvailable: false,
-  enableDriverPayField: false
-};
+export const DriverAppForm: FC<Props> = ({ defaultValues, onSubmit }) => {
+  const [values, setValues] = useState<DriverAppFormValues>({
+    ...defaultDriverAppFormValues,
+    ...defaultValues
+  });
 
-export const DriverAppForm: FC<Props> = ({ onSubmit }) => {
-  const [values, setValues] = useState<DriverAppFormValues>(defaultValues);
+  useEffect(() => {
+    setValues({
+      ...defaultDriverAppFormValues,
+      ...defaultValues
+    });
+  }, [defaultValues]);
 
   const handleChange =
     (field: keyof DriverAppFormValues) =>
-    (event: FormEvent<HTMLInputElement>) => {
-      const { checked } = event.currentTarget;
-
+    (checked: boolean) => {
       setValues((current) => ({
         ...current,
         [field]: checked
@@ -41,7 +50,7 @@ export const DriverAppForm: FC<Props> = ({ onSubmit }) => {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSubmit(values);
+    void onSubmit(values);
   };
 
   return (
@@ -49,76 +58,68 @@ export const DriverAppForm: FC<Props> = ({ onSubmit }) => {
       onSubmit={handleSubmit}
       className="mx-auto w-full max-w-[602px] rounded-[10px] bg-white px-8 py-11 shadow-[0_0_0_1px_rgba(233,236,245,0.75)]"
     >
-      <div className="space-y-7">
-        <label className="flex cursor-pointer items-start gap-3.5">
-          <span className="relative mt-0.5 shrink-0">
-            <input
-              type="checkbox"
-              checked={values.hidePaymentInformation}
-              onChange={handleChange('hidePaymentInformation')}
-              className={checkboxClassName}
-            />
-            <span className="flex size-[26px] items-center justify-center rounded-[4px] border border-[#c5cbe5] bg-[#f3f5ff] transition-colors peer-checked:border-[#176be8] peer-checked:bg-[#176be8] peer-focus-visible:ring-2 peer-focus-visible:ring-[#d9e6ff] peer-focus-visible:ring-offset-2">
-              <Check
-                className="size-[15px] text-white opacity-0 transition-opacity peer-checked:opacity-100"
-                strokeWidth={3.2}
-              />
-            </span>
-          </span>
-
-          <span className="space-y-3 text-left">
-            <span className="block text-[17px] leading-[1.15] font-normal tracking-[-0.01em] text-[#1d2234]">
+      <FieldGroup className="gap-7">
+        <Field orientation="horizontal" className="gap-3.5">
+          <Checkbox
+            id="hide-payment-information"
+            checked={values.hidePaymentInformation}
+            onCheckedChange={(checked) =>
+              handleChange('hidePaymentInformation')(checked === true)
+            }
+            className={checkboxClassName}
+          />
+          <FieldContent className="gap-3 text-left">
+            <FieldLabel
+              htmlFor="hide-payment-information"
+              className="text-[17px] leading-[1.15] font-normal tracking-[-0.01em] text-[#1d2234]"
+            >
               Hide Payment Information on Driver apps (will show price for
               payment terms: COD, COP and CKOD)
-            </span>
-            <span className="block text-[16px] leading-[1.25] font-normal tracking-[-0.01em] text-[#25293a]">
+            </FieldLabel>
+            <FieldDescription className="text-[16px] leading-[1.25] tracking-[-0.01em] text-[#25293a]">
               This works when Fleet Driver Mode is checked.
-            </span>
-          </span>
-        </label>
+            </FieldDescription>
+          </FieldContent>
+        </Field>
 
-        <label className="flex cursor-pointer items-start gap-3.5">
-          <span className="relative mt-0.5 shrink-0">
-            <input
-              type="checkbox"
-              checked={values.disableCustomerNotAvailable}
-              onChange={handleChange('disableCustomerNotAvailable')}
-              className={checkboxClassName}
-            />
-            <span className="flex size-[26px] items-center justify-center rounded-[4px] border border-[#c5cbe5] bg-[#f3f5ff] transition-colors peer-checked:border-[#176be8] peer-checked:bg-[#176be8] peer-focus-visible:ring-2 peer-focus-visible:ring-[#d9e6ff] peer-focus-visible:ring-offset-2">
-              <Check
-                className="size-[15px] text-white opacity-0 transition-opacity peer-checked:opacity-100"
-                strokeWidth={3.2}
-              />
-            </span>
-          </span>
+        <Field orientation="horizontal" className="gap-3.5">
+          <Checkbox
+            id="disable-customer-not-available"
+            checked={values.disableCustomerNotAvailable}
+            onCheckedChange={(checked) =>
+              handleChange('disableCustomerNotAvailable')(checked === true)
+            }
+            className={checkboxClassName}
+          />
+          <FieldContent className="text-left">
+            <FieldLabel
+              htmlFor="disable-customer-not-available"
+              className="text-[17px] leading-[1.2] font-normal tracking-[-0.01em] text-[#1d2234]"
+            >
+              Disable Customer not Available button on the Driver App
+            </FieldLabel>
+          </FieldContent>
+        </Field>
 
-          <span className="pt-0.5 text-left text-[17px] leading-[1.2] font-normal tracking-[-0.01em] text-[#1d2234]">
-            Disable Customer not Available button on the Driver App
-          </span>
-        </label>
-
-        <label className="flex cursor-pointer items-start gap-3.5">
-          <span className="relative mt-0.5 shrink-0">
-            <input
-              type="checkbox"
-              checked={values.enableDriverPayField}
-              onChange={handleChange('enableDriverPayField')}
-              className={checkboxClassName}
-            />
-            <span className="flex size-[26px] items-center justify-center rounded-[4px] border border-[#c5cbe5] bg-[#f3f5ff] transition-colors peer-checked:border-[#176be8] peer-checked:bg-[#176be8] peer-focus-visible:ring-2 peer-focus-visible:ring-[#d9e6ff] peer-focus-visible:ring-offset-2">
-              <Check
-                className="size-[15px] text-white opacity-0 transition-opacity peer-checked:opacity-100"
-                strokeWidth={3.2}
-              />
-            </span>
-          </span>
-
-          <span className="pt-0.5 text-left text-[17px] leading-[1.2] font-normal tracking-[-0.01em] text-[#1d2234]">
-            Enable Driver Pay field
-          </span>
-        </label>
-      </div>
+        <Field orientation="horizontal" className="gap-3.5">
+          <Checkbox
+            id="enable-driver-pay-field"
+            checked={values.enableDriverPayField}
+            onCheckedChange={(checked) =>
+              handleChange('enableDriverPayField')(checked === true)
+            }
+            className={checkboxClassName}
+          />
+          <FieldContent className="text-left">
+            <FieldLabel
+              htmlFor="enable-driver-pay-field"
+              className="text-[17px] leading-[1.2] font-normal tracking-[-0.01em] text-[#1d2234]"
+            >
+              Enable Driver Pay field
+            </FieldLabel>
+          </FieldContent>
+        </Field>
+      </FieldGroup>
 
       <div className="mt-8 flex justify-end">
         <Button

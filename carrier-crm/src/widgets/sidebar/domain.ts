@@ -27,7 +27,8 @@ export type SidebarContainerGroup = {
 
 export type AppSidebarProps = {
   title: string;
-  backTo?: string;
   groups: SidebarContainerGroup[];
+  activePath?: string;
+  backTo?: string;
   header?: ReactNode;
 };

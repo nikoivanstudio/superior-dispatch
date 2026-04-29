@@ -1,10 +1,10 @@
 model BillingSettings {
-  id             Int      @default(autoincrement())
+  id             Int      @id @default(autoincrement())
   userId         Int      @unique @map("user_id")
-  user           user     @relation(fields: [userId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
   attachInvoices Boolean? @map("attach_invoices")
   deliveryDates  Boolean? @map("delivery_dates")
-  invoceEmail    String?  @map("invoice_email")
+  invoiceEmail   String?  @map("invoice_email")
   companyName    String?  @map("company_name")
 
   @@map("billing_settings")

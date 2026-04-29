@@ -1,5 +1,5 @@
 model DriverAppSettings {
-  id              Int      @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   userId          Int      @unique @map("user_id")
   user            User     @relation(fields: [userId], references: [id])
   hidePayment     Boolean? @map("hide_payment")

@@ -5,6 +5,13 @@ import { type ChangeEvent, type FC, useState } from 'react';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/shared/ui/select';
 
 import {
   defaultFormValues,
@@ -33,10 +40,18 @@ export const TerminalsForm: FC<Props> = ({
 
   const handleChange =
     (field: keyof TerminalFormValues) =>
-    (event: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       setValues((current) => ({
         ...current,
         [field]: event.target.value
+      }));
+    };
+
+  const handleSelectChange =
+    (field: keyof TerminalFormValues) => (value: string) => {
+      setValues((current) => ({
+        ...current,
+        [field]: value
       }));
     };
 
@@ -79,24 +94,27 @@ export const TerminalsForm: FC<Props> = ({
 
         <label className="block">
           <span className={labelClassName}>State</span>
-          <div className="relative">
-            <select
-              name="state"
-              value={values.state}
-              onChange={handleChange('state')}
+          <Select
+            name="state"
+            value={values.state}
+            onValueChange={handleSelectChange('state')}
+          >
+            <SelectTrigger
               className={cn(
                 fieldClassName,
-                'w-full appearance-none pr-10 outline-none'
+                'h-9 w-full justify-between rounded-[4px] px-3 text-[16px] [&_[data-slot=select-value]]:text-[#1f2434]'
               )}
             >
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
               {stateOptions.map((state) => (
-                <option key={state} value={state}>
+                <SelectItem key={state} value={state}>
                   {state}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-[#5e6477]" />
-          </div>
+            </SelectContent>
+          </Select>
         </label>
 
         <label className="block">

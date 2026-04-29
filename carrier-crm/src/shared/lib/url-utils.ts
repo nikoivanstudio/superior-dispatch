@@ -14,13 +14,13 @@ const getOrigin = (): string => {
     return trimTrailingSlash(browserOrigin);
   }
 
-  const configuredOrigin = process.env.CRM_APP_ORIGIN?.trim();
+  const configuredOrigin = import.meta.env.VITE_CRM_APP_ORIGIN?.trim();
 
   if (configuredOrigin) {
     return trimTrailingSlash(configuredOrigin);
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (import.meta.env.DEV) {
     return 'http://crm.localtest.me:5173';
   }
 
@@ -64,17 +64,17 @@ const sanitizeRedirectTarget = (target: string | null | undefined) => {
   return target;
 };
 const getBackendBaseUrl = (): string => {
-  const configuredUrl = process.env.CRM_API_BASE_URL?.trim();
+  const configuredUrl = import.meta.env.VITE_CRM_API_BASE_URL?.trim();
 
   if (configuredUrl) {
     return trimTrailingSlash(configuredUrl);
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (import.meta.env.DEV) {
     return DEFAULT_BACKEND_BASE_URL;
   }
 
-  throw new Error('CRM_API_BASE_URL is required in production');
+  throw new Error('VITE_CRM_API_BASE_URL is required in production');
 };
 
 const getPostLoginRedirect = (request: Request) => {

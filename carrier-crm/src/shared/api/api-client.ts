@@ -1,4 +1,5 @@
 import { urlUtils } from '../lib/url-utils';
+import { apiUtils } from '../lib/api-utils';
 
 type RequestParams = {
   url: string;
@@ -12,18 +13,26 @@ const request = async <T>({
   method,
   signal,
   headers,
+  credentials,
   queryParams,
   withoutParse
 }: RequestParams): Promise<T> => {
-  const response = await fetch(`${urlUtils.getUrl(url, queryParams)}`, {
-    method,
-    body,
-    signal,
-    headers: {
-      'X-API-KEY': 'X_API_KEY_SUPERIOR_DISPATCH',
-      ...headers
-    }
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${urlUtils.getUrl(url, queryParams)}`, {
+      method,
+      body,
+      signal,
+      credentials: credentials ?? 'include',
+      headers: {
+        'X-API-KEY': 'X_API_KEY_SUPERIOR_DISPATCH',
+        ...headers
+      }
+    });
+  } catch (error) {
+    throw apiUtils.createBackendUnavailableError(error);
+  }
 
   return withoutParse ? (response as T) : await response.json();
 };

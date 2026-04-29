@@ -67,7 +67,8 @@ export const SidebarLayout: FC<Props> = ({ header, groups }) => {
                         className={cn(
                           'relative flex min-h-12 items-center rounded-xl px-4 py-3 text-[1.0625rem] font-medium tracking-[-0.02em] text-[#232736] transition-colors',
                           'hover:bg-[#f4f7ff] hover:text-[#1555ff]',
-                          item.isActive && 'bg-[#f8fbff] font-semibold text-[#1555ff]'
+                          item.isActive &&
+                            '!bg-[#eef4ff] !font-semibold !text-[#1555ff]'
                         )}
                       >
                         <span>{item.label}</span>

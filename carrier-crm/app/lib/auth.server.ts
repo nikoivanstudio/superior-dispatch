@@ -44,12 +44,30 @@ function getSetCookieHeader(response: Response) {
   return setCookieHeader;
 }
 
+const BACKEND_UNAVAILABLE_MESSAGE = 'Backend is unavailable right now';
+
 async function readErrorPayload(response: Response) {
   try {
     return await response.json();
   } catch {
     return null;
   }
+}
+
+function createBackendUnavailableError(cause?: unknown) {
+  return Object.assign(new Error(BACKEND_UNAVAILABLE_MESSAGE), {
+    cause,
+    code: 'BACKEND_UNAVAILABLE'
+  });
+}
+
+function isBackendUnavailableError(error: unknown) {
+  return (
+    error instanceof Error &&
+    ('code' in error
+      ? (error as { code?: unknown }).code === 'BACKEND_UNAVAILABLE'
+      : error.message === BACKEND_UNAVAILABLE_MESSAGE)
+  );
 }
 
 export function sanitizeRedirectTarget(target: string | null | undefined) {
@@ -80,13 +98,19 @@ export async function getCurrentUser(request: Request): Promise<AuthUser | null>
     return null;
   }
 
-  const response = await fetch(`${getBackendBaseUrl()}/auth/me`, {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      cookie: cookieHeader
-    }
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${getBackendBaseUrl()}/auth/me`, {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        cookie: cookieHeader
+      }
+    });
+  } catch (error) {
+    throw createBackendUnavailableError(error);
+  }
 
   if (response.status === 401) {
     return null;
@@ -125,14 +149,23 @@ export async function signIn({
   username: string;
   password: string;
 }) {
-  const response = await fetch(`${getBackendBaseUrl()}/signin`, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify({ username, password })
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${getBackendBaseUrl()}/signin`, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({ username, password })
+    });
+  } catch {
+    return {
+      ok: false as const,
+      error: 'Sign in is temporarily unavailable while backend is offline'
+    };
+  }
 
   if (!response.ok) {
     const payload = await readErrorPayload(response);
@@ -153,13 +186,19 @@ export async function signIn({
 }
 
 export async function signOut(request: Request) {
-  const response = await fetch(`${getBackendBaseUrl()}/logout`, {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      cookie: request.headers.get('cookie') ?? ''
-    }
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${getBackendBaseUrl()}/logout`, {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        cookie: request.headers.get('cookie') ?? ''
+      }
+    });
+  } catch (error) {
+    throw createBackendUnavailableError(error);
+  }
 
   if (!response.ok) {
     throw new Error(`Logout failed with status ${response.status}`);
@@ -169,3 +208,5 @@ export async function signOut(request: Request) {
     setCookie: getSetCookieHeader(response)
   };
 }
+
+export { isBackendUnavailableError };
