@@ -7,5 +7,5 @@ model BillingSettings {
   invoiceEmail   String?  @map("invoice_email")
   companyName    String?  @map("company_name")
 
-  @@map("billing_settings")
+  @@map("billingSettings")
 }

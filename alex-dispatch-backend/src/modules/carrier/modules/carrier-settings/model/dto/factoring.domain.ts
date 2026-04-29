@@ -6,7 +6,12 @@ export const createFactoringDtoSchema = z.object({
   attachInvoices: z.boolean().optional(),
   deliveryDates: z.boolean().optional(),
   invoiceEmail: z.email().optional(),
-  companyName: z.string().optional()
+  companyName: z.string().optional(),
+  address: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  phone: z.string().optional(),
+  factoringFee: z.string().optional()
 });
 
 export type FactoringEntity = {
@@ -16,6 +21,11 @@ export type FactoringEntity = {
   deliveryDates?: boolean;
   invoiceEmail?: string;
   companyName?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  phone?: string;
+  factoringFee?: string;
 };
 
 export type FactoringDomain = Factoring;

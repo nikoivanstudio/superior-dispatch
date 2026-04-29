@@ -28,7 +28,14 @@ export const useFactoringSettings = () => {
       return factoringApi.upsert({
         userId: user.id,
         companyName: values.name || undefined,
-        invoiceEmail: values.email || undefined
+        invoiceEmail: values.email || undefined,
+        address: values.address || undefined,
+        city: values.city || undefined,
+        state: values.state || undefined,
+        phone: values.phoneNumber
+          ? `${values.phoneCountryCode}${values.phoneNumber}`
+          : undefined,
+        factoringFee: values.factoringFee || undefined
       });
     },
     onSuccess: async () => {
@@ -41,6 +48,7 @@ export const useFactoringSettings = () => {
   return {
     values: mapFactoringToFormValues(query.data),
     isLoading: query.isLoading,
+    error: query.error,
     isSaving: mutation.isPending,
     submit: mutation.mutate
   };

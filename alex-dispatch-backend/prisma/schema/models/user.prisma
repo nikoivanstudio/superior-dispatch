@@ -16,6 +16,9 @@ model User {
   billingSettings   BillingSettings?
   notifications     Notifications?
   factoring         Factoring?
+  carrierInfo       CarrierInfo?
+  superDispatchInfo SuperDispatchInfo?
+  pModeInfo         PModeInfo?
 
   @@map("users")
 }

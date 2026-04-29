@@ -6,5 +6,5 @@ model DriverAppSettings {
   disableCustomer Boolean? @map("disable_customer")
   driverPay       Boolean? @map("driver_pay")
 
-  @@map("driver_app_settings")
+  @@map("driverAppSettings")
 }

@@ -6,6 +6,11 @@ model Factoring {
   deliveryDates  Boolean? @map("delivery_dates")
   invoiceEmail   String?  @map("invoice_email")
   companyName    String?  @map("company_name")
+  address        String?
+  city           String?
+  state          String?
+  phone          String?
+  factoringFee   String?  @map("factoring_fee")
 
   @@map("factoring")
 }

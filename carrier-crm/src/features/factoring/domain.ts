@@ -5,6 +5,11 @@ export type FactoringEntity = {
   deliveryDates?: boolean;
   invoiceEmail?: string;
   companyName?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  phone?: string;
+  factoringFee?: string;
 };
 
 export type FactoringFormValues = {
@@ -47,5 +52,12 @@ export const mapFactoringToFormValues = (
 ): FactoringFormValues => ({
   ...defaultFactoringFormValues,
   name: settings?.companyName ?? defaultFactoringFormValues.name,
-  email: settings?.invoiceEmail ?? defaultFactoringFormValues.email
+  address: settings?.address ?? defaultFactoringFormValues.address,
+  city: settings?.city ?? defaultFactoringFormValues.city,
+  state: settings?.state ?? defaultFactoringFormValues.state,
+  email: settings?.invoiceEmail ?? defaultFactoringFormValues.email,
+  phoneNumber: settings?.phone?.startsWith(defaultFactoringFormValues.phoneCountryCode)
+    ? settings.phone.slice(defaultFactoringFormValues.phoneCountryCode.length)
+    : (settings?.phone ?? defaultFactoringFormValues.phoneNumber),
+  factoringFee: settings?.factoringFee ?? defaultFactoringFormValues.factoringFee
 });

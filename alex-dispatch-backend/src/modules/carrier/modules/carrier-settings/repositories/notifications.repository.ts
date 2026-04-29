@@ -8,6 +8,14 @@ import {
 } from '../../carrier-settings/model/dto/notifications.domain';
 import { objectUtils } from '../../../../../common/lib/object.utils';
 
+const normalizeNotificationsData = (
+  notifications: Omit<CreateNotificationsDto, 'userId'>
+) => ({
+  notificationsEmail: notifications.notificationsEmail ?? null,
+  deliveryConfirmationsEmail:
+    notifications.deliveryConfirmationsEmail ?? null
+});
+
 @Injectable()
 export class NotificationsRepository {
   constructor(private readonly dbService: DbService) {}
@@ -25,8 +33,15 @@ export class NotificationsRepository {
   public async createNotifications(
     notifications: CreateNotificationsDto
   ): Promise<NotificationsEntity> {
+    const { userId, ...data } = notifications;
+
     return objectUtils.removeNullProperties(
-      await this.dbService.notifications.create({ data: notifications })
+      await this.dbService.notifications.create({
+        data: {
+          userId,
+          ...normalizeNotificationsData(data)
+        }
+      })
     );
   }
 
@@ -34,12 +49,16 @@ export class NotificationsRepository {
     notifications: CreateNotificationsDto
   ): Promise<NotificationsEntity> {
     const { userId, ...data } = notifications;
+    const normalizedData = normalizeNotificationsData(data);
 
     return objectUtils.removeNullProperties(
       await this.dbService.notifications.upsert({
         where: { userId },
-        create: notifications,
-        update: data
+        create: {
+          userId,
+          ...normalizedData
+        },
+        update: normalizedData
       })
     );
   }
@@ -47,10 +66,12 @@ export class NotificationsRepository {
   public async updateNotifications(
     notifications: Partial<UpdateNotificationsDto> & { userId: number }
   ): Promise<NotificationsEntity> {
+    const { userId, ...data } = notifications;
+
     return objectUtils.removeNullProperties(
       await this.dbService.notifications.update({
-        where: { userId: notifications.userId },
-        data: notifications
+        where: { userId },
+        data: normalizeNotificationsData(data)
       })
     );
   }

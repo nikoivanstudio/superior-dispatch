@@ -8,6 +8,15 @@ import {
 } from '../../carrier-settings/model/dto/billing-settings.domain';
 import { objectUtils } from '../../../../../common/lib/object.utils';
 
+const normalizeBillingSettingsData = (
+  billingSettings: Omit<CreateBillingSettingsDto, 'userId'>
+) => ({
+  attachInvoices: billingSettings.attachInvoices ?? null,
+  deliveryDates: billingSettings.deliveryDates ?? null,
+  invoiceEmail: billingSettings.invoiceEmail ?? null,
+  companyName: billingSettings.companyName ?? null
+});
+
 @Injectable()
 export class BillingSettingsRepository {
   constructor(private readonly dbService: DbService) {}
@@ -25,8 +34,15 @@ export class BillingSettingsRepository {
   public async createBillingSettings(
     billingSettings: CreateBillingSettingsDto
   ): Promise<BillingSettingsEntity> {
+    const { userId, ...data } = billingSettings;
+
     return objectUtils.removeNullProperties(
-      await this.dbService.billingSettings.create({ data: billingSettings })
+      await this.dbService.billingSettings.create({
+        data: {
+          userId,
+          ...normalizeBillingSettingsData(data)
+        }
+      })
     );
   }
 
@@ -34,12 +50,16 @@ export class BillingSettingsRepository {
     billingSettings: CreateBillingSettingsDto
   ): Promise<BillingSettingsEntity> {
     const { userId, ...data } = billingSettings;
+    const normalizedData = normalizeBillingSettingsData(data);
 
     return objectUtils.removeNullProperties(
       await this.dbService.billingSettings.upsert({
         where: { userId },
-        create: billingSettings,
-        update: data
+        create: {
+          userId,
+          ...normalizedData
+        },
+        update: normalizedData
       })
     );
   }
@@ -47,10 +67,12 @@ export class BillingSettingsRepository {
   public async updateBillingSettings(
     billingSettings: Partial<UpdateBillingSettingsDto> & { userId: number }
   ): Promise<BillingSettingsEntity> {
+    const { userId, ...data } = billingSettings;
+
     return objectUtils.removeNullProperties(
       await this.dbService.billingSettings.update({
-        where: { userId: billingSettings.userId },
-        data: billingSettings
+        where: { userId },
+        data: normalizeBillingSettingsData(data)
       })
     );
   }

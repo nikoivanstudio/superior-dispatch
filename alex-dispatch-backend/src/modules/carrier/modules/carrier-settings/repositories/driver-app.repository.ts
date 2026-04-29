@@ -8,6 +8,14 @@ import {
 } from '../model/dto/driver-app.domain';
 import { objectUtils } from '../../../../../common/lib/object.utils';
 
+const normalizeDriverAppSettingsData = (
+  driverAppSettings: Omit<CreateDriverAppDto, 'userId'>
+) => ({
+  hidePayment: driverAppSettings.hidePayment ?? null,
+  disableCustomer: driverAppSettings.disableCustomer ?? null,
+  driverPay: driverAppSettings.driverPay ?? null
+});
+
 @Injectable()
 export class DriverAppRepository {
   constructor(private readonly dbService: DbService) {}
@@ -25,8 +33,15 @@ export class DriverAppRepository {
   public async createDriverAppSettings(
     driverAppSettings: CreateDriverAppDto
   ): Promise<DriverAppEntity> {
+    const { userId, ...data } = driverAppSettings;
+
     return objectUtils.removeNullProperties(
-      await this.dbService.driverAppSettings.create({ data: driverAppSettings })
+      await this.dbService.driverAppSettings.create({
+        data: {
+          userId,
+          ...normalizeDriverAppSettingsData(data)
+        }
+      })
     );
   }
 
@@ -34,12 +49,16 @@ export class DriverAppRepository {
     driverAppSettings: CreateDriverAppDto
   ): Promise<DriverAppEntity> {
     const { userId, ...data } = driverAppSettings;
+    const normalizedData = normalizeDriverAppSettingsData(data);
 
     return objectUtils.removeNullProperties(
       await this.dbService.driverAppSettings.upsert({
         where: { userId },
-        create: driverAppSettings,
-        update: data
+        create: {
+          userId,
+          ...normalizedData
+        },
+        update: normalizedData
       })
     );
   }
@@ -47,10 +66,12 @@ export class DriverAppRepository {
   public async updateDriverAppSettings(
     driverAppSettings: Partial<UpdateDriverAppDto> & { userId: number }
   ): Promise<DriverAppEntity> {
+    const { userId, ...data } = driverAppSettings;
+
     return objectUtils.removeNullProperties(
       await this.dbService.driverAppSettings.update({
-        where: { userId: driverAppSettings.userId },
-        data: driverAppSettings
+        where: { userId },
+        data: normalizeDriverAppSettingsData(data)
       })
     );
   }

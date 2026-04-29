@@ -1,11 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useAuth } from '@/features/auth';
-
+import { useAuth } from '../../auth';
 import { billingApi } from '../api/billing-api';
 import {
-  mapBillingSettingsToFormValues,
-  type BillingFormValues
+  type BillingFormValues,
+  mapBillingSettingsToFormValues
 } from '../domain';
 
 export const useBillingSettings = () => {
@@ -42,6 +41,7 @@ export const useBillingSettings = () => {
   return {
     values: mapBillingSettingsToFormValues(query.data),
     isLoading: query.isLoading,
+    error: query.error,
     isSaving: mutation.isPending,
     submit: mutation.mutate
   };

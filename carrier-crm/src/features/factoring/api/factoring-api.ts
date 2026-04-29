@@ -36,6 +36,11 @@ export const factoringApi = {
     userId: number;
     companyName?: string;
     invoiceEmail?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    phone?: string;
+    factoringFee?: string;
   }): Promise<FactoringEntity> {
     const response = await apiClient.post<Response>({
       url: FACTORING_SETTINGS_URL,

@@ -1,6 +1,6 @@
 import { ChevronDown, Globe } from 'lucide-react';
 import type { ChangeEvent, FC, FormEvent } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -37,6 +37,13 @@ export const FactoringForm: FC<Props> = ({ defaultValues, onSubmit }) => {
     ...defaultFactoringFormValues,
     ...defaultValues
   });
+
+  useEffect(() => {
+    setValues({
+      ...defaultFactoringFormValues,
+      ...defaultValues
+    });
+  }, [defaultValues]);
 
   const handleChange =
     (field: keyof FactoringFormValues) =>

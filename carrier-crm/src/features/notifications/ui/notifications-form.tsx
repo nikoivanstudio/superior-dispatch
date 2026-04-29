@@ -1,5 +1,5 @@
-import type { FC, FormEvent } from 'react';
-import { useEffect, useState } from 'react';
+import type { ChangeEvent, FC } from 'react';
+import { useState } from 'react';
 
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -20,35 +20,25 @@ const fieldClassName = cn(
 );
 
 const labelClassName = cn(
-  'mb-2 block text-[17px] leading-[1.2] font-normal tracking-[-0.01em] text-[#1d2234]'
+  'mb-2 block text-[17px] leading-[1.2] font-normal tracking-[-0.01em] text-[#1d2234] text-left pl-1'
 );
 
-export const NotificationsForm: FC<Props> = ({
-  defaultValues,
-  onSubmit
-}) => {
+export const NotificationsForm: FC<Props> = ({ defaultValues, onSubmit }) => {
   const [values, setValues] = useState<NotificationsFormValues>({
     ...defaultNotificationsFormValues,
     ...defaultValues
   });
 
-  useEffect(() => {
-    setValues({
-      ...defaultNotificationsFormValues,
-      ...defaultValues
-    });
-  }, [defaultValues]);
-
   const handleChange =
     (field: keyof NotificationsFormValues) =>
-    (event: FormEvent<HTMLInputElement>) => {
+    (event: ChangeEvent<HTMLInputElement>) => {
       setValues((current) => ({
         ...current,
-        [field]: event.currentTarget.value
+        [field]: event.target.value
       }));
     };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
     void onSubmit(values);
   };
@@ -56,10 +46,10 @@ export const NotificationsForm: FC<Props> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto flex w-full max-w-[602px] flex-col rounded-[10px] bg-white px-8 pt-12 pb-8 shadow-[0_0_0_1px_rgba(233,236,245,0.75)]"
+      className='mx-auto flex w-full max-w-[602px] flex-col rounded-[10px] bg-white px-8 pt-12 pb-8 shadow-[0_0_0_1px_rgba(233,236,245,0.75)]'
     >
-      <div className="flex flex-col gap-7">
-        <label className="block">
+      <div className='flex flex-col gap-7'>
+        <label className='block'>
           <span className={labelClassName}>Notification emails</span>
           <Input
             value={values.notificationEmails}
@@ -68,7 +58,7 @@ export const NotificationsForm: FC<Props> = ({
           />
         </label>
 
-        <label className="block">
+        <label className='block'>
           <span className={labelClassName}>Delivery confirmation emails</span>
           <Input
             value={values.deliveryConfirmationEmails}
@@ -78,12 +68,12 @@ export const NotificationsForm: FC<Props> = ({
         </label>
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <div className='mt-8 flex justify-end'>
         <Button
-          type="submit"
+          type='submit'
           size={null}
           variant={null}
-          className="h-[36px] min-w-[164px] rounded-[4px] bg-[#176be8] px-6 text-[17px] font-semibold text-white shadow-none transition-colors hover:bg-[#0f57c2]"
+          className='h-[36px] min-w-[164px] rounded-[4px] bg-[#176be8] px-6 text-[17px] font-semibold text-white shadow-none transition-colors hover:bg-[#0f57c2]'
         >
           Save Changes
         </Button>

@@ -1,0 +1,12 @@
+model SuperDispatchInfo {
+  id                    Int      @id @default(autoincrement())
+  userId                Int      @unique
+  user                  User     @relation(fields: [userId], references: [id])
+  clientId              String?  @map("client_id")
+  clientSecret          String?  @map("client_secret")
+  carrierId             Int?     @map("carrier_id")
+  defaultDriverPassword String?  @map("default_driver_password")
+  enableSuperDispatch   Boolean? @map("enable_super_dispatch")
+
+  @@map("superDispatchInfo")
+}

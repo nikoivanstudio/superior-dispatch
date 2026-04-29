@@ -42,6 +42,7 @@ export const useDriverAppSettings = () => {
   return {
     values: mapDriverAppSettingsToFormValues(query.data),
     isLoading: query.isLoading,
+    error: query.error,
     isSaving: mutation.isPending,
     submit: mutation.mutate
   };

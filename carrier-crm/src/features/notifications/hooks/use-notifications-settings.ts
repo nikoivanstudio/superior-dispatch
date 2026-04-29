@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { useAuth } from '@/features/auth';
-
+import { useAuth } from '../../auth';
 import { notificationsApi } from '../api/notifications-api';
 import {
   mapNotificationsToFormValues,
@@ -42,6 +41,7 @@ export const useNotificationsSettings = () => {
   return {
     values: mapNotificationsToFormValues(query.data),
     isLoading: query.isLoading,
+    error: query.error,
     isSaving: mutation.isPending,
     submit: mutation.mutate
   };

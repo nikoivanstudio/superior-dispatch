@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { CarrierService } from './carrier.service';
 import { CarrierSettingsModule } from './modules/carrier-settings/carrier-settings.module';
+import { CarrierProfileModule } from './modules/carrier-profile/carrier-profile.module';
 
 @Module({
-  imports: [CarrierSettingsModule],
+  imports: [CarrierSettingsModule, CarrierProfileModule],
   controllers: [],
   providers: [CarrierService]
 })

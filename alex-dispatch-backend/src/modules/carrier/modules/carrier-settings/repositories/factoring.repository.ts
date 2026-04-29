@@ -8,6 +8,20 @@ import {
 } from '../model/dto/factoring.domain';
 import { objectUtils } from '../../../../../common/lib/object.utils';
 
+const normalizeFactoringData = (
+  factoring: Omit<CreateFactoringDto, 'userId'>
+) => ({
+  attachInvoices: factoring.attachInvoices ?? null,
+  deliveryDates: factoring.deliveryDates ?? null,
+  invoiceEmail: factoring.invoiceEmail ?? null,
+  companyName: factoring.companyName ?? null,
+  address: factoring.address ?? null,
+  city: factoring.city ?? null,
+  state: factoring.state ?? null,
+  phone: factoring.phone ?? null,
+  factoringFee: factoring.factoringFee ?? null
+});
+
 @Injectable()
 export class FactoringRepository {
   constructor(private readonly dbService: DbService) {}
@@ -23,8 +37,15 @@ export class FactoringRepository {
   public async createFactoring(
     factoring: CreateFactoringDto
   ): Promise<FactoringEntity> {
+    const { userId, ...data } = factoring;
+
     return objectUtils.removeNullProperties(
-      await this.dbService.factoring.create({ data: factoring })
+      await this.dbService.factoring.create({
+        data: {
+          userId,
+          ...normalizeFactoringData(data)
+        }
+      })
     );
   }
 
@@ -32,12 +53,16 @@ export class FactoringRepository {
     factoring: CreateFactoringDto
   ): Promise<FactoringEntity> {
     const { userId, ...data } = factoring;
+    const normalizedData = normalizeFactoringData(data);
 
     return objectUtils.removeNullProperties(
       await this.dbService.factoring.upsert({
         where: { userId },
-        create: factoring,
-        update: data
+        create: {
+          userId,
+          ...normalizedData
+        },
+        update: normalizedData
       })
     );
   }
@@ -45,10 +70,12 @@ export class FactoringRepository {
   public async updateFactoring(
     factoring: Partial<UpdateFactoringDto> & { userId: number }
   ): Promise<FactoringEntity> {
+    const { userId, ...data } = factoring;
+
     return objectUtils.removeNullProperties(
       await this.dbService.factoring.update({
-        where: { userId: factoring.userId },
-        data: factoring
+        where: { userId },
+        data: normalizeFactoringData(data)
       })
     );
   }
